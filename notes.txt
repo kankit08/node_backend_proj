@@ -1,0 +1,22 @@
+JSON Web Token (JWT) is a way to securely share information between a client (frontend) and a server (backend).
+
+In simple terms, JWT helps the server identify and verify a logged-in user without asking them to log in again for every request.
+
+1. Understand with a simple example
+Imagine you are building a job portal.
+1. A user enters their email and password to log in.
+2. The backend verifies the credentials.
+3. If the credentials are correct, the backend generates a JWT token.
+4. The backend sends that token to the frontend.
+5. The frontend stores the token.
+6. Whenever the frontend makes another API request, it sends the token.
+7. The backend verifies the token and identifies the user.
+
+
+2. Why do we use JSON Web Token?
+- Authentication: To identify whether a user is logged in.
+- Authorization: To check whether a user has permission to access a resource.
+- Security: The token is digitally signed, so the backend can detect if its contents have been modified.
+- Stateless authentication: The server can verify a token without maintaining a traditional server-side session for every user.
+
+
