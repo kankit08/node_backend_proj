@@ -33,4 +33,12 @@ app.use(express.static("public"))
 // let your backend read cookie values, often used for sessions or authentication-related workflows.
 app.use(cookieParser())
 
+
+// import routes
+import userRouter from "./routes/user.routes.js"
+
+
+// routes decalration
+app.use("/api/v1/user", userRouter)
+
 export default app
