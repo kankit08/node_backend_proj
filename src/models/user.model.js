@@ -56,7 +56,7 @@ const userSchema = mongoose.Schema({
 if(!this.isModified("Password")) return next () // if password is  modified then run the below logic else return next or we can say if password is not modified then return the next and do not implement below logic   
 
 userSchema.pre("save", async function(next){
-    this.password = bcrypt.hash(this.password, 10)
+    this.password = await bcrypt.hash(this.password, 10)
     next()
 })
 
