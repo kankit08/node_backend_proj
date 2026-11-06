@@ -1,5 +1,5 @@
 import { asynchandler } from "../utils/asynchandler.js";
-import {ApiError} from "../utils/ApiResponse.js"
+import { ApiError } from "../utils/apiError.js";
 import {User} from "../models/user.model.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
@@ -19,8 +19,7 @@ const registerUser = asynchandler(async(req, res) => {
 
     // getting data from UI/frontend
     const {fullname, email, password, username} = req.body
-    console.log("email:", email);
-
+    
 
     // validations of fields
     if([fullname, email, password, username].some((fields) => fields?.trim() === ""))
@@ -31,7 +30,7 @@ const registerUser = asynchandler(async(req, res) => {
 
 
     // check if user alreday exists: username, email
-    const existedUser = User.findOne({
+    const existedUser = await User.findOne({
         $or: [{username}, {email}]
     })
     if(existedUser){
@@ -40,8 +39,8 @@ const registerUser = asynchandler(async(req, res) => {
 
 
     // check for images, avatar
-    const avatarLocalPath = req.files?.avatar[0]?.path
-    const coverImageLocalPath = req.files?.coverImage[0]?.path
+    const avatarLocalPath = req.files?.avatar[0]?.path;
+    const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
 
     if(!avatarLocalPath){
         throw new ApiError(400, "Avatar is required")
@@ -52,7 +51,7 @@ const registerUser = asynchandler(async(req, res) => {
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     if(!avatar){
-        throw new ApiError(400, "Avatar is required")
+        throw new ApiError(400, "Avatar2 is required")
     }
 
     // create a user obj -- create a user entry in db
