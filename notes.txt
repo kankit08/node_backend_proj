@@ -20,3 +20,31 @@ Imagine you are building a job portal.
 - Stateless authentication: The server can verify a token without maintaining a traditional server-side session for every user.
 
 
+// Access & Refresh Token
+
+. During login
+Suppose you enter your email and password.
+
+The backend verifies your credentials and generates two tokens:
+- Access Token (expires in 15 minutes)
+- Refresh Token (expires in 7 days)
+Both are sent to your frontend.
+2. After 15 minutes
+Your Access Token expires.
+
+Now, the backend will not accept your expired Access Token for protected API requests.
+
+But how will the backend know that you are still an authenticated user?
+
+It needs proof that you are allowed to get a new Access Token.
+
+That's why you send the Refresh Token back to the backend.
+3. Why does the backend verify it?
+Because the backend cannot blindly generate a new Access Token for anyone who asks.
+
+It checks:
+- Is the Refresh Token valid?
+- Has it expired?
+- Has it been revoked?
+- Does it belong to a valid user?
+If everything is correct, the backend generates a new Access Token.
