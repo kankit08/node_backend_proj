@@ -15,6 +15,29 @@ import {ApiResponse} from "../utils/ApiResponse.js"
 // check user is created or not
 // retrun response
 
+const generateAccessAndRefreshToken = async(userId) => {
+    try {
+        // find the user
+        const user = await User.findOne(userId)
+
+        // Access and Refresh Token generation for a user
+        const accessToken = user.generateAccessToken()
+        const refreshToken = user.generateRefreshToken()
+
+        // adding refresh token to db
+        user.refreshToken = refreshToken
+
+        // saving token in db
+        await user.save({validateBeforeSave: false})
+
+        // return access and refresh token
+        return {accessToken, refreshToken}
+        
+    } catch (error) {
+        throw new ApiError(500, "Something went wrong while generating Access or Refresh Token")
+    }
+}
+
 const registerUser = asynchandler(async(req, res) => {
 
     // getting data from UI/frontend
@@ -77,5 +100,67 @@ const registerUser = asynchandler(async(req, res) => {
     // retrun response
     return res.status(201).json(new ApiResponse(200, "User registered Successfully"))
 }) 
+
+
+const loginUser = asynchandler(async(req, res, ) => {
+    
+    // steps to login a user
+    // get data from req.body
+    // login using username or email
+    // find the user
+    // password check
+    // access and refresh token
+    // send cookies
+
+
+    // getting data from req.body
+    const {email, password, username} = req.body
+
+    // login using email or username
+    if(!(email || username)){
+        throw new ApiError(400, "username or email is required")
+    }
+
+    // find the username
+    const user = User.findOne({
+        $or: [{username}, {email}]
+    })
+
+    // if user not found
+    if(!user){
+        throw new ApiError(404, "user not found or doesn't exist")
+    }
+
+    // password check
+    const isPasswordValid = await user.isPasswordCorrect(password)
+
+    if(!isPasswordValid){
+        throw new ApiError(401, "Password is invalid")
+    }
+
+    // getting access or refresh token for a user
+    const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id)
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+
+    // security steps for cookies, only modified by server 
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    // return response and cookies
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          { user: loggedInUser, accessToken, refreshToken },
+          "User logged in Successfully"
+        )
+      );
+})
 
 export {registerUser}
