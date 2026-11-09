@@ -163,4 +163,9 @@ const loginUser = asynchandler(async(req, res, ) => {
       );
 })
 
+
+const logout = asynchandler(async(req, res) => {
+    // logic
+    // to logout clear the token(refresh, access & cookies)
+})
 export {registerUser}
