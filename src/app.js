@@ -10,7 +10,7 @@ app.use(cors({
 }))
 
 
-// accepting data (in limit) through json format 
+// accepting data (in limit) in json format 
 // JSON body-parsing middleware.
 // Reads JSON data sent by the client and makes it available in req.body
 // backend can receive data such as a user's name, email, or password from a frontend.

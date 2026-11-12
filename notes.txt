@@ -1,3 +1,11 @@
+// bcrypt
+bcrypt converts a user's original password into a hashed string so that we don't store the actual password in MongoDB.
+
+When the user logs in, we don't decrypt the stored password.
+Instead, we compare the entered password with the stored hash.
+
+// JWT
+
 JSON Web Token (JWT) is a way to securely share information between a client (frontend) and a server (backend).
 
 In simple terms, JWT helps the server identify and verify a logged-in user without asking them to log in again for every request.
@@ -11,6 +19,7 @@ Imagine you are building a job portal.
 5. The frontend stores the token.
 6. Whenever the frontend makes another API request, it sends the token.
 7. The backend verifies the token and identifies the user.
+
 
 
 2. Why do we use JSON Web Token?
@@ -48,3 +57,64 @@ It checks:
 - Has it been revoked?
 - Does it belong to a valid user?
 If everything is correct, the backend generates a new Access Token.
+
+
+// Session 
+What is a Session?
+A session is a way to remember that a user has logged in to a website.
+
+Imagine you visit an online shopping website.
+1. You enter your email and password.
+2. The backend verifies your credentials.
+3. The server creates a session for you.
+4. Whenever you visit another page, the server can identify that you are already logged in.
+Without sessions, the server would need to ask for your login credentials on every request.
+
+In simple words: A session stores information about a user's login state on the server.
+
+
+//Cookies:
+
+What is a Cookie?
+A cookie is a small piece of data stored in the user's browser.
+
+For example:
+
+When you log in, the server can send a cookie to your browser containing a session ID.
+
+Your browser stores that cookie and automatically sends it with future requests to the same website, subject to cookie settings.
+
+Browser Cookie:
+sessionId = abc123xyz
+
+
+
+1. User logs in
+
+Email + Password
+
+
+2. Backend verifies credentials
+
+
+3. Server creates a session
+
+Session data is stored on the server
+
+
+4. Server sends a cookie
+
+Contains the session ID
+
+
+5. Browser stores the cookie
+
+
+6. User makes another request
+
+Browser automatically sends the cookie
+
+
+7. Server checks session ID
+
+Identifies the logged-in user

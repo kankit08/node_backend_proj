@@ -18,7 +18,7 @@ import {ApiResponse} from "../utils/ApiResponse.js"
 const generateAccessAndRefreshToken = async(userId) => {
     try {
         // find the user
-        const user = await User.findOne(userId)
+        const user = await User.findById(userId)
 
         // Access and Refresh Token generation for a user
         const accessToken = user.generateAccessToken()
@@ -115,6 +115,7 @@ const loginUser = asynchandler(async(req, res, ) => {
 
     // getting data from req.body
     const {email, password, username} = req.body
+    
 
     // login using email or username
     if(!(email || username)){
@@ -122,7 +123,7 @@ const loginUser = asynchandler(async(req, res, ) => {
     }
 
     // find the username
-    const user = User.findOne({
+    const user = await User.findOne({
         $or: [{username}, {email}]
     })
 
@@ -169,7 +170,7 @@ const logoutUser = asynchandler(async(req,res) => {
     // to logout clear the token(refresh, access & cookies)
 
     await User.findByIdAndUpdate(req.user._id,
-        {$set: {refreshToken: undefined}},
+        {$unset: {refreshToken: 1}},
         {new: true}
     )
     const options = {
@@ -183,4 +184,4 @@ const logoutUser = asynchandler(async(req,res) => {
     .clearCookie("accessToken", options)
     .json(new ApiResponse(200, {}, "User logged out"))
 })
-export {registerUser}
+export {registerUser, loginUser, logoutUser}
