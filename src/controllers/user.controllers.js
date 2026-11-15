@@ -21,8 +21,8 @@ const generateAccessAndRefreshToken = async(userId) => {
         const user = await User.findById(userId)
 
         // Access and Refresh Token generation for a user
-        const accessToken = user.generateAccessToken()
-        const refreshToken = user.generateRefreshToken()
+        const accessToken = await user.generateAccessToken()
+        const refreshToken = await user.generateRefreshToken()
 
         // adding refresh token to db
         user.refreshToken = refreshToken
@@ -50,8 +50,6 @@ const registerUser = asynchandler(async(req, res) => {
         throw new ApiError(400, "All fields are required")
     }
 
-
-
     // check if user alreday exists: username, email
     const existedUser = await User.findOne({
         $or: [{username}, {email}]
@@ -59,7 +57,6 @@ const registerUser = asynchandler(async(req, res) => {
     if(existedUser){
         throw new ApiError(409, "User with this username or email already exist")
     }
-
 
     // check for images, avatar
     const avatarLocalPath = req.files?.avatar[0]?.path;
@@ -87,7 +84,6 @@ const registerUser = asynchandler(async(req, res) => {
         avatar: avatar.url,
         coverImage: coverImage?.url || ""
     })
-
     
     // check user is created or not
     // remove pass & refresh token field from response (start after select statement)
@@ -180,8 +176,8 @@ const logoutUser = asynchandler(async(req,res) => {
 
     return res
     .status(200)
-    .clearCookie("refreshToken", options)
     .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, {}, "User logged out"))
 })
 export {registerUser, loginUser, logoutUser}
