@@ -298,4 +298,72 @@ const updateAccountDetails = asynchandler(async(req, res) => {
   .json(new ApiResponse(200, user, "Account details Updated successfully"))
 })
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateAccountDetails };
+const updateUserAvatar = asynchandler(async(req, res) => {
+  // need 2 middleware: multer and signedin User
+
+  // get local avatar path
+  const avatarLocalpath = req.file?.path
+
+  if(!avatarLocalpath){
+    throw new ApiError(400, "Avatar is missing")
+  }
+
+  // upload the image on cloudinary
+  const avatar = await uploadOnCloudinary(avatarLocalpath)
+
+  if(!avatar){
+    throw new ApiError(400, "Error while uploading avatar on cloudinary")
+  }
+
+  // update the avatar on user profile
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        avatar: avatar.url
+      }
+    },
+    {new: true}
+  ).select("-password")
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200), user, "Avatar updated Successfully")
+
+})
+
+const updateUserCoverImage = asynchandler(async(req, res) => {
+  // need 2 middleware: multer and signedin User
+
+  // get local CoverImage path
+  const coverImageLocalpath = req.file?.path
+
+  if(!coverImageLocalpath){
+    throw new ApiError(400, "CoverImage is missing")
+  }
+
+  // upload the image on cloudinary
+  const CoverImage = await uploadOnCloudinary(coverImageLocalpath)
+
+  if(!CoverImage){
+    throw new ApiError(400, "Error while uploading CoverImage on cloudinary")
+  }
+
+  // update the CoverImage on user profile
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        CoverImage: CoverImage.url
+      }
+    },
+    {new: true}
+  ).select("-password")
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200), user, "CoverImage updated Successfully")
+
+})
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateAccountDetails, updateUserAvatar, updateUserCoverImage };
