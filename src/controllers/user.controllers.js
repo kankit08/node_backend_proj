@@ -5,16 +5,6 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 
-// Steps to register a user
-// get user details from fronetend
-// validations of fields
-// check if user alreday exists: username, email
-// check for images, avatar
-// uplaod them to cloudinary, avatar
-// create a user obj -- create a user entry in db
-// remove pass & refresh token field from response
-// check user is created or not
-// retrun response
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -42,6 +32,17 @@ const generateAccessAndRefreshToken = async (userId) => {
 };
 
 const registerUser = asynchandler(async (req, res) => {
+    // Steps to register a user
+    // get user details from fronetend
+    // validations of fields
+    // check if user alreday exists: username, email
+    // check for images, avatar
+    // uplaod them to cloudinary, avatar
+    // create a user obj -- create a user entry in db
+    // remove pass & refresh token field from response
+    // check user is created or not
+    // retrun response
+
   // getting data from UI/frontend
   const { fullname, email, password, username } = req.body;
 
@@ -244,4 +245,57 @@ const refreshAccessToken = asynchandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+const changeCurrentPassword = asynchandler(async(req,res) => {
+
+  // getting the password data
+  const {oldPassword, newPassword} = req.body
+
+  // get the user details
+  const user = await User.findById(req.user?._id)
+
+  // check whether password is correct or not
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+
+  if(!isPasswordCorrect){
+    throw new ApiError(400, "Old Password is invalid")
+  }
+
+  // set the new password
+  user.password = new password
+
+  // save the new password
+  await user.save({validateBeforeSave: false})
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200, {}, "Password Change Successfully"))
+})
+
+const getCurrentUser = asynchandler(async(req,res) => {
+  return res
+  .status(200)
+  .json(200, req.user, "Current User fetched Successfully")
+})
+
+const updateAccountDetails = asynchandler(async(req, res) => {
+  
+  // get account data
+  const {fullname, email} = req.body
+
+  if(!(fullname || email)){
+    throw new ApiError(400, "All fields are mandatory")
+  }
+
+  // find user by id
+  const user = await User.findByIdAndUpdate(
+    req.user?._id, 
+    {$set: {fullname, email:email}}, 
+    {new: true}
+  ).select("-password")
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200, user, "Account details Updated successfully"))
+})
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateAccountDetails };
